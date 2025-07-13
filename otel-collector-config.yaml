@@ -1,0 +1,46 @@
+---
+receivers:
+  otlp:
+    protcols:
+      grpc:
+        endpoint: 0.0.0.0:4317
+      http:
+        endpoint: 0.0.0.0:4318
+
+processors:
+  batch:
+  memory_limiter:
+    check_interval: 5s
+    limit_mib: 300
+    spike_limit_mib: 50
+
+exporters:
+  otlp:
+    endpoint: "api.honeycomb.io:443"
+    headers:
+      "x-honeycomb-team": "${HONEYCOMB_API_KEY}"
+
+extensions:
+  health_check:
+    endpoint: 0.0.0.0:13133
+  pprof:
+  zpages:
+
+service:
+  extensions:
+    - health_check
+    - pprof
+    - zpages
+  pipelines:
+    traces:
+      receivers: [otlp]
+      processors: [batch, memory_limiter]
+      exporters: [otlp]
+    metrics:
+      receivers: [otlp]
+      processors: [batch, memory_limiter]
+      exporters: [otlp]
+    logs:
+      receivers: [otlp]
+      processors: [batch, memory_limiter]
+      exporters: [otlp]
