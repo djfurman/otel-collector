@@ -1,6 +1,7 @@
 ---
 services:
   otel-collector:
+    env_file: ./.env
     image: otel/opentelemetry-collector-contrib
     ports:
       - 1888:1888 # pprof
